@@ -15,12 +15,18 @@ class BaseVariables(object):
     """
     @classmethod
     def get_all_variables(cls):
+        def extend(d, f):
+            # Appazur extension for select2
+            if hasattr(f, 'select2'):
+                d['select2'] = f.select2
+            return d
         methods = inspect.getmembers(cls)
-        return [{'name': m[0],
+        return [extend({
+                 'name': m[0],
                  'label': m[1].label,
                  'field_type': m[1].field_type.name,
                  'options': m[1].options,
-                } for m in methods if getattr(m[1], 'is_rule_variable', False)]
+                }, m[1]) for m in methods if getattr(m[1], 'is_rule_variable', False)]
 
 
 def rule_variable(field_type, label=None, options=None):
