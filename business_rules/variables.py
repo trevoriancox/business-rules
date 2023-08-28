@@ -7,6 +7,7 @@ from .operators import (BaseType,
                         BooleanType,
                         SelectType,
                         SelectMultipleType,
+                        TimeType,
                         DateTimeType)
 
 class BaseVariables(object):
@@ -69,3 +70,6 @@ def select_multiple_rule_variable(label=None, options=None):
 
 def datetime_rule_variable(label=None):
     return _rule_variable_wrapper(DateTimeType, label)
+
+def time_rule_variable(label=None):
+    return _rule_variable_wrapper(TimeType, label)

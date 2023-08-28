@@ -1,12 +1,12 @@
 import inspect
 import re
-from datetime import datetime
+from datetime import datetime, time
 from functools import wraps
 from six import string_types, integer_types
 
 from .fields import (FIELD_TEXT, FIELD_NUMERIC, FIELD_NO_INPUT,
                      FIELD_SELECT, FIELD_SELECT_MULTIPLE,
-                     FIELD_DATETIME)
+                     FIELD_TIME, FIELD_DATETIME)
 from .utils import fn_name_to_pretty_label, float_to_decimal
 from decimal import Decimal, Inexact, Context
 
@@ -274,3 +274,35 @@ class DateTimeType(BaseType):
     def before_than_or_equal_to(self, other_datetime):
         print(f'before_than_or_equal_to {self.value} {other_datetime}')
         return self.value <= other_datetime
+
+
+@export_type
+class TimeType(BaseType):
+    name = "time"
+    TIME_FORMAT = "%H:%M"
+
+    def _assert_valid_value_and_cast(self, value):
+        """
+        Parse string into datetime.time instance.
+        """
+        if isinstance(value, time):
+            return value
+
+        try:
+            return datetime.strptime(value, self.TIME_FORMAT).time()
+        except (ValueError, TypeError):
+            raise AssertionError("{0} is not a valid time.".format(value))
+
+    @type_operator(FIELD_TIME, label="Equal To")
+    def equal_to(self, other_time):
+        return self.value == other_time
+
+    @type_operator(FIELD_TIME, label="After")
+    def after_than_or_equal_to(self, other_time):
+        print(f'after_than_or_equal_to {self.value} {other_time}')
+        return self.value >= other_time
+
+    @type_operator(FIELD_TIME, label="Before")
+    def before_than_or_equal_to(self, other_time):
+        print(f'before_than_or_equal_to {self.value} {other_time}')
+        return self.value <= other_time
